@@ -1140,10 +1140,19 @@ void Render::renderPlan(
         break;
       }
 
-      case ObjectType::LayerGroup:
-        ASSERT(false);
-        break;
+      case ObjectType::LayerGroup: {
+        RenderPlan subPlan;
 
+        for (const Layer* child : static_cast<const LayerGroup*>(layer)->layers()) {
+          if (child->isVisible())      
+            subPlan.addLayer(child, frame);
+        }
+
+        renderPlan(subPlan, image, area, frame, compositeImage,
+                   render_background, render_transparent, blendMode);
+
+        break;
+      }
     }
 
     // Draw extras
