@@ -260,9 +260,8 @@ private:
     if ((count > 1) ||
         (count == 1 && m_layer && (newName != m_layer->name() ||
                                    newUserData != m_layer->userData() ||
-                                   (m_layer->isImage() &&
                                     (newOpacity != static_cast<LayerImage*>(m_layer)->opacity() ||
-                                     newBlendMode != static_cast<LayerImage*>(m_layer)->blendMode()))))) {
+                                     newBlendMode != static_cast<LayerImage*>(m_layer)->blendMode())))) {
       try {
         ContextWriter writer(UIContext::instance());
         Tx tx(writer, "Set Layer Properties");
@@ -277,8 +276,8 @@ private:
 
         const bool nameChanged = (newName != m_layer->name());
         const bool userDataChanged = (newUserData != m_layer->userData());
-        const bool opacityChanged = (m_layer->isImage() && newOpacity != static_cast<LayerImage*>(m_layer)->opacity());
-        const bool blendModeChanged = (m_layer->isImage() && newBlendMode != static_cast<LayerImage*>(m_layer)->blendMode());
+        const bool opacityChanged = (newOpacity != static_cast<LayerImage*>(m_layer)->opacity());
+        const bool blendModeChanged = (newBlendMode != static_cast<LayerImage*>(m_layer)->blendMode());
 
         for (Layer* layer : range.selectedLayers()) {
           if (nameChanged && newName != layer->name())
@@ -287,13 +286,11 @@ private:
           if (userDataChanged && newUserData != layer->userData())
             tx(new cmd::SetUserData(layer, newUserData, m_document));
 
-          if (layer->isImage()) {
-            if (opacityChanged && newOpacity != static_cast<LayerImage*>(layer)->opacity())
-              tx(new cmd::SetLayerOpacity(static_cast<LayerImage*>(layer), newOpacity));
+          if (opacityChanged && newOpacity != static_cast<LayerImage*>(layer)->opacity())
+            tx(new cmd::SetLayerOpacity(static_cast<LayerImage*>(layer), newOpacity));
 
-            if (blendModeChanged && newBlendMode != static_cast<LayerImage*>(layer)->blendMode())
-              tx(new cmd::SetLayerBlendMode(static_cast<LayerImage*>(layer), newBlendMode));
-          }
+          if (blendModeChanged && newBlendMode != static_cast<LayerImage*>(layer)->blendMode())
+            tx(new cmd::SetLayerBlendMode(static_cast<LayerImage*>(layer), newBlendMode));
         }
 
         // Redraw timeline because the layer's name/user data/color
@@ -430,24 +427,18 @@ private:
       name()->setText(m_layer->name().c_str());
       name()->setEnabled(true);
 
-      if (m_layer->isImage()) {
-        mode()->setSelectedItem(nullptr);
-        for (auto item : *mode()) {
-          if (auto blendModeItem = dynamic_cast<BlendModeItem*>(item)) {
-            if (blendModeItem->mode() == static_cast<LayerImage*>(m_layer)->blendMode()) {
-              mode()->setSelectedItem(item);
-              break;
-            }
+      mode()->setSelectedItem(nullptr);
+      for (auto item : *mode()) {
+        if (auto blendModeItem = dynamic_cast<BlendModeItem*>(item)) {
+          if (blendModeItem->mode() == static_cast<LayerImage*>(m_layer)->blendMode()) {
+            mode()->setSelectedItem(item);
+            break;
           }
         }
-        mode()->setEnabled(!m_layer->isBackground());
-        opacity()->setValue(static_cast<LayerImage*>(m_layer)->opacity());
-        opacity()->setEnabled(!m_layer->isBackground());
       }
-      else {
-        mode()->setEnabled(false);
-        opacity()->setEnabled(false);
-      }
+      mode()->setEnabled(!m_layer->isBackground());
+      opacity()->setValue(static_cast<LayerImage*>(m_layer)->opacity());
+      opacity()->setEnabled(!m_layer->isBackground());
 
       color_t c = m_layer->userData().color();
       m_userDataView.color()->setColor(Color::fromRgb(rgba_getr(c), rgba_getg(c), rgba_getb(c), rgba_geta(c)));
