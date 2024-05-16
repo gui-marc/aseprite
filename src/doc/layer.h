@@ -189,7 +189,7 @@ namespace doc {
   //////////////////////////////////////////////////////////////////////
   // LayerGroup class
 
-  class LayerGroup : public Layer {
+  class LayerGroup : public LayerImage {
   public:
     explicit LayerGroup(Sprite* sprite);
     virtual ~LayerGroup();

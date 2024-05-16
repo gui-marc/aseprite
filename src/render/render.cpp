@@ -998,6 +998,8 @@ void Render::renderPlan(
   for (const auto& item : plan.items()) {
     const Cel* cel = item.cel;
     const Layer* layer = item.layer;
+    const LayerImage* imgLayer = static_cast<const LayerImage*>(layer);
+
 
     ASSERT(layer->isVisible()); // Hidden layers shouldn't be in the plan
 
@@ -1082,7 +1084,6 @@ void Render::renderPlan(
           }
 
           if (celImage) {
-            const LayerImage* imgLayer = static_cast<const LayerImage*>(layer);
             BlendMode layerBlendMode =
               (blendMode == BlendMode::UNSPECIFIED ?
                imgLayer->blendMode():
@@ -1142,6 +1143,11 @@ void Render::renderPlan(
 
       case ObjectType::LayerGroup: {
         RenderPlan subPlan;
+        
+        BlendMode groupBlendMode =
+          (blendMode == BlendMode::UNSPECIFIED ?
+            imgLayer->blendMode():
+            blendMode);
 
         for (const Layer* child : static_cast<const LayerGroup*>(layer)->layers()) {
           if (child->isVisible())      
@@ -1149,7 +1155,7 @@ void Render::renderPlan(
         }
 
         renderPlan(subPlan, image, area, frame, compositeImage,
-                   render_background, render_transparent, blendMode);
+                   render_background, render_transparent, groupBlendMode);
 
         break;
       }
