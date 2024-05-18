@@ -1256,11 +1256,6 @@ void Render::renderPlan(
 
       case ObjectType::LayerGroup: {
         RenderPlan subPlan;
-        
-        BlendMode groupBlendMode =
-          (blendMode == BlendMode::UNSPECIFIED ?
-            imgLayer->blendMode():
-            blendMode);
 
         for (const Layer* child : static_cast<const LayerGroup*>(layer)->layers()) {
           if (child->isVisible())      
@@ -1268,7 +1263,7 @@ void Render::renderPlan(
         }
 
         renderPlan(subPlan, image, area, frame, compositeImage,
-                   render_background, render_transparent, groupBlendMode);
+                   render_background, render_transparent, imgLayer->blendMode());
 
         break;
       }
