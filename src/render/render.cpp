@@ -1262,8 +1262,32 @@ void Render::renderPlan(
             subPlan.addLayer(child, frame);
         }
 
-        renderPlan(subPlan, image, area, frame, compositeImage,
-                   render_background, render_transparent, imgLayer->blendMode());
+        // We treat the group layer as a separate image so we can apply modifiers
+        // in the whole group while not affecting the layers behind it.
+        Image *groupImage = Image::createCopy(image);
+        groupImage->clear(0);
+
+        // Render the group sublayers
+        // We dont apply any blend mode here, as the group layer is a separate image
+        // and we want to first calculate the layer blendmodes sepparately then merge the images
+        renderPlan(subPlan, groupImage, area, frame, compositeImage,
+                   render_background, render_transparent, BlendMode::UNSPECIFIED);
+
+        // Get the pallete of the sprite in the current frame
+        Palette* pal = m_sprite->palette(frame);
+
+        // Create a fake cel data to render the group image
+        ImageRef groupImageRef(groupImage);
+        CelData groupCelData(groupImageRef);
+
+        // The group layer should be rendered in the whole area
+        // For some reason, rendering a specif area was causing a bug
+        gfx::Clip totalArea(image->bounds());
+
+        // Render the group image in the main image, applying the group modifiers
+        // The global opacity is not applied here, as it is applied in the ImageLayer case
+        renderImage(image, groupImage, pal, groupCelData.boundsF(),
+              totalArea, compositeImage, imgLayer->opacity(), imgLayer->blendMode());
 
         break;
       }
