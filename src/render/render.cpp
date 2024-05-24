@@ -1286,8 +1286,7 @@ void Render::renderPlan(
 
         // Render the group image in the main image, applying the group modifiers
         // The global opacity is not applied here, as it is applied in the ImageLayer case
-        renderImage(image, groupImage, pal, groupCelData.boundsF(),
-              totalArea, compositeImage, imgLayer->opacity(), imgLayer->blendMode());
+        composite_image(image, groupImage, pal, 0 ,0 , imgLayer->opacity(), imgLayer->blendMode());
 
         break;
       }
