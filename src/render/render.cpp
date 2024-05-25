@@ -1276,14 +1276,6 @@ void Render::renderPlan(
         // Get the pallete of the sprite in the current frame
         Palette* pal = m_sprite->palette(frame);
 
-        // Create a fake cel data to render the group image
-        ImageRef groupImageRef(groupImage);
-        CelData groupCelData(groupImageRef);
-
-        // The group layer should be rendered in the whole area
-        // For some reason, rendering a specif area was causing a bug
-        gfx::Clip totalArea(image->bounds());
-
         // Render the group image in the main image, applying the group modifiers
         // The global opacity is not applied here, as it is applied in the ImageLayer case
         composite_image(image, groupImage, pal, 0 ,0 , imgLayer->opacity(), imgLayer->blendMode());
