@@ -50,9 +50,9 @@ do -- ExportSpriteSheet
   }
   local i = Image{ fromFile="_test_export_spritesheet1.png" }
   expect_img(i,  {
-    11,8,11,21,8,11,11,
-    11,8,11,21,11,8,11,
-    11,8,11,21,11,11,8,
+    11,8,11,0,8,11,11,
+    11,8,11,0,11,8,11,
+    11,8,11,0,11,11,8,
   })
 
   local s = Sprite{ fromFile="sprites/4f-index-4x4.aseprite" }
