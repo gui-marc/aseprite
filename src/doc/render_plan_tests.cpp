@@ -25,16 +25,17 @@ using namespace doc;
 #define HELPER_LOG(a, b) \
   a->layer()->name() << " instead of " << b->layer()->name()
 
-#define EXPECT_PLAN(a, b, c, d)                                         \
-  {                                                                     \
-    RenderPlan plan;                                                    \
-    plan.addLayer(spr->root(), 0);                                      \
-    const auto& items = plan.items();                                   \
-    EXPECT_EQ(a, items[0].cel) << HELPER_LOG(items[0].cel, a);          \
-    EXPECT_EQ(b, items[1].cel) << HELPER_LOG(items[1].cel, b);          \
-    EXPECT_EQ(c, items[2].cel) << HELPER_LOG(items[2].cel, c);          \
-    EXPECT_EQ(d, items[3].cel) << HELPER_LOG(items[3].cel, d);          \
-  }
+#define EXPECT_PLAN(a, b, c, d)                                            \
+  {                                                                        \
+    RenderPlan plan;                                                       \
+    for (const auto& layer : spr->root()->layers())                        \
+      plan.addLayer(layer, 0);                                             \
+    const auto items = plan.items();                                       \
+    EXPECT_EQ(a, items[0].cel) << HELPER_LOG(items[0].cel, a);             \
+    EXPECT_EQ(b, items[1].cel) << HELPER_LOG(items[1].cel, b);             \
+    EXPECT_EQ(c, items[2].cel) << HELPER_LOG(items[2].cel, c);             \
+    EXPECT_EQ(d, items[3].cel) << HELPER_LOG(items[3].cel, d);             \
+  }                                                                        \
 
 TEST(RenderPlan, ZIndex)
 {
@@ -97,7 +98,8 @@ TEST(RenderPlan, ZIndexBugWithEmptyCels)
 #define EXPECT_PLAN(a, b, c)                                            \
   {                                                                     \
     RenderPlan plan;                                                    \
-    plan.addLayer(spr->root(), 0);                                      \
+    for (const auto& layer : spr->root()->layers())                     \
+      plan.addLayer(layer, 0);                                          \
     const auto& items = plan.items();                                   \
     EXPECT_EQ(a, items[0].cel) << HELPER_LOG(items[0].cel, a);          \
     EXPECT_EQ(b, items[1].cel) << HELPER_LOG(items[1].cel, b);          \
